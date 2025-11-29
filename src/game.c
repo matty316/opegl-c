@@ -3,6 +3,8 @@
 #include "quad.h"
 #include "shader.h"
 #include "common.h"
+#include "vert-shader.h"
+#include "frag-shader.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,19 +22,29 @@ void process_actions(GLFWwindow *window, Quad *quad) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 
+  if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+    int count;
+    const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
+    if (count >= 4) {
+      quad->movement.forward = axes[1] > 0.5f;
+      quad->movement.backward = axes[1] < -0.5f;
+      quad->movement.left = axes[0] > 0.5f;
+      quad->movement.right = axes[0] < -0.5f;
+    }
+  }
   quad->movement.forward = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
   quad->movement.backward = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
   quad->movement.left = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
   quad->movement.right = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
 }
 
-void init(GLFWwindow **window) {
+void init(GLFWwindow **window, bool fullscreen) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  *window = glfwCreateWindow(width, height, "OpenGL in C", glfwGetPrimaryMonitor(), NULL);
+  *window = glfwCreateWindow(width, height, "OpenGL in C", fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
   if (*window == NULL) {
     printf("Failed to create GLFW window\n");
     glfwTerminate();
@@ -51,13 +63,14 @@ void init(GLFWwindow **window) {
   glViewport(0, 0, actual_width, actual_height);
 
   glfwSetFramebufferSizeCallback(*window, framebuffer_size_callback);
+  glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void run() {
+void run(bool fullscreen) {
   GLFWwindow *window;
-  init(&window);
+  init(&window, fullscreen);
 
-  GLuint shader = create_shader("shaders/shader.vert", "shaders/shader.frag");
+  GLuint shader = create_shader((const char*)shaders_shader_vert, shaders_shader_vert_len, (const char*)shaders_shader_frag, shaders_shader_frag_len);
   use(shader);
 
   vec3 pos = {0.0f, 0.0f, 0.0f};

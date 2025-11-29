@@ -1,6 +1,8 @@
 #ifndef game_h
 #define game_h
 
-void run();
+#include <stdbool.h>
+
+void run(bool fullscreen);
 
 #endif

@@ -14,4 +14,4 @@ add_library(${PROJECT_NAME} ${MY_SOURCES} ${MY_HEADERS})
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw cglm)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -g)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -g)
