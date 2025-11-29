@@ -39,14 +39,16 @@ void process_actions(GLFWwindow *window, Quad *quad) {
     }
 
     const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
-    if (buttons[11] == GLFW_PRESS)
-      forward = true;
-    if (buttons[13] == GLFW_PRESS)
-      backward = true;
-    if (buttons[14] == GLFW_PRESS)
-      left = true;
-    if (buttons[12] == GLFW_PRESS)
-      right = true;
+    if (count >= 15) {
+      if (buttons[11] == GLFW_PRESS)
+        forward = true;
+      if (buttons[13] == GLFW_PRESS)
+        backward = true;
+      if (buttons[14] == GLFW_PRESS)
+        left = true;
+      if (buttons[12] == GLFW_PRESS)
+        right = true;
+    }
   }
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     forward = true;
