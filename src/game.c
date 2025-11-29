@@ -22,20 +22,45 @@ void process_actions(GLFWwindow *window, Quad *quad) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 
+  bool forward = false, backward = false, left = false, right = false;
+
   if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
     int count;
-    const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
-    if (count >= 4) {
-      quad->movement.forward = axes[1] > 0.5f;
-      quad->movement.backward = axes[1] < -0.5f;
-      quad->movement.left = axes[0] > 0.5f;
-      quad->movement.right = axes[0] < -0.5f;
+    const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
+    if (count >= 2) {
+      if (axes[1] < -0.5f)
+        forward = true;
+      if (axes[1] > 0.5f)
+        backward = true;
+      if (axes[0] < -0.5f)
+        left = true;
+      if (axes[0] > 0.5f)
+        right = true;
     }
+
+    const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+    if (buttons[11] == GLFW_PRESS)
+      forward = true;
+    if (buttons[13] == GLFW_PRESS)
+      backward = true;
+    if (buttons[14] == GLFW_PRESS)
+      left = true;
+    if (buttons[12] == GLFW_PRESS)
+      right = true;
   }
-  quad->movement.forward = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-  quad->movement.backward = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
-  quad->movement.left = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
-  quad->movement.right = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    forward = true;
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    backward = true;
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    left = true;
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    right = true;
+
+  quad->movement.forward = forward;
+  quad->movement.backward = backward;
+  quad->movement.left = left;
+  quad->movement.right = right;
 }
 
 void init(GLFWwindow **window, bool fullscreen) {
