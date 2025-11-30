@@ -42,27 +42,23 @@ void setup_quad_vao(GLuint *vao, GLuint *vbo, GLuint *ebo) {
 }
 
 void update_quad(Quad *quad, float delta_time) {
-  bool diagnol = (quad->movement.forward || quad->movement.backward) && (quad->movement.left && quad->movement.right);
+  bool diag = (quad->movement.forward || quad->movement.backward) && (quad->movement.left && quad->movement.right);
   float accel = 1.0f;
 
-  if (diagnol)
+  if (diag)
     accel = accel * (1.0 / GLM_SQRT1_2f);
 
   vec2 velocity;
   glm_vec2_zero(velocity);
 
-  if (quad->movement.forward) {
+  if (quad->movement.forward)
     velocity[1] += accel * delta_time;
-  }
-  if (quad->movement.backward) {
+  if (quad->movement.backward)
     velocity[1] -= accel * delta_time;
-  }
-  if (quad->movement.left) {
+  if (quad->movement.left)
     velocity[0] -= accel * delta_time;
-  }
-  if (quad->movement.right) {
+  if (quad->movement.right)
     velocity[0] += accel * delta_time;
-  }
 
   glm_vec2_copy(velocity, quad->velocity);
 
