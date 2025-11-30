@@ -48,7 +48,6 @@ void update_quad(Quad *quad, float delta_time) {
   if (diagnol)
     accel = accel * (1.0 / GLM_SQRT1_2f);
 
-  float damping = 0.1f;
   vec2 velocity;
   glm_vec2_zero(velocity);
 
@@ -65,17 +64,7 @@ void update_quad(Quad *quad, float delta_time) {
     velocity[0] += accel * delta_time;
   }
 
-  if (glm_vec2_eqv_eps(velocity, GLM_VEC2_ZERO)) {
-    float min = fminf(quad->velocity[0], quad->velocity[1]);
-    quad->velocity[0] = min;
-    quad->velocity[1] = min;
-    vec2 damped;
-    glm_vec2_zero(damped);
-    glm_vec2_scale(quad->velocity, fminf(1.0f / damping * delta_time, 1.0f), damped);
-    glm_vec2_sub(quad->velocity, damped, quad->velocity);
-  } else {
-    glm_vec2_copy(velocity, quad->velocity);
-  }
+  glm_vec2_copy(velocity, quad->velocity);
 
   quad->pos[1] += quad->velocity[1];
   quad->pos[0] += quad->velocity[0];
