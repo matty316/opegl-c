@@ -1,7 +1,11 @@
 #include "quad.h"
+#include "cglm/types.h"
+#include "cglm/vec2-ext.h"
+#include "cglm/vec2.h"
 #include "shader.h"
 #include "cglm/affine-pre.h"
 #include "cglm/affine.h"
+#include <X11/Xlib.h>
 #include <math.h>
 #include <string.h>
 
@@ -38,21 +42,33 @@ void setup_quad_vao(GLuint *vao, GLuint *vbo, GLuint *ebo) {
 }
 
 void update_quad(Quad *quad, float delta_time) {
-  const float accel = 2.0f;
-  float damping = 0.2f;
+  bool diagnol = (quad->movement.forward || quad->movement.backward) && (quad->movement.left && quad->movement.right);
+  float accel = 1.0f;
+
+  if (diagnol)
+    accel = accel * 1.0 / GLM_SQRT1_2f;
+
+  float damping = 0.1f;
   vec2 velocity;
   glm_vec2_zero(velocity);
 
-  if (quad->movement.forward)
+  if (quad->movement.forward) {
     velocity[1] += accel * delta_time;
-  if (quad->movement.backward)
+  }
+  if (quad->movement.backward) {
     velocity[1] -= accel * delta_time;
-  if (quad->movement.left)
+  }
+  if (quad->movement.left) {
     velocity[0] -= accel * delta_time;
-  if (quad->movement.right)
+  }
+  if (quad->movement.right) {
     velocity[0] += accel * delta_time;
+  }
 
-  if (velocity[0] == 0.0f && velocity[1] == 0.0f) {
+  if (glm_vec2_eqv_eps(velocity, GLM_VEC2_ZERO)) {
+    float min = fminf(quad->velocity[0], quad->velocity[1]);
+    quad->velocity[0] = min;
+    quad->velocity[1] = min;
     vec2 damped;
     glm_vec2_zero(damped);
     glm_vec2_scale(quad->velocity, fminf(1.0f / damping * delta_time, 1.0f), damped);
