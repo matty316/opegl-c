@@ -46,7 +46,7 @@ void update_quad(Quad *quad, float delta_time) {
   float accel = 1.0f;
 
   if (diagnol)
-    accel = accel * 1.0 / GLM_SQRT1_2f;
+    accel = accel * (1.0 / GLM_SQRT1_2f);
 
   float damping = 0.1f;
   vec2 velocity;
