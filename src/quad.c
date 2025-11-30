@@ -1,11 +1,8 @@
 #include "quad.h"
-#include "cglm/types.h"
-#include "cglm/vec2-ext.h"
+#include "cglm/io.h"
+#include "cglm/util.h"
 #include "cglm/vec2.h"
 #include "shader.h"
-#include "cglm/affine-pre.h"
-#include "cglm/affine.h"
-#include <X11/Xlib.h>
 #include <math.h>
 #include <string.h>
 
@@ -42,28 +39,38 @@ void setup_quad_vao(GLuint *vao, GLuint *vbo, GLuint *ebo) {
 }
 
 void update_quad(Quad *quad, float delta_time) {
-  bool diag = (quad->movement.forward || quad->movement.backward) && (quad->movement.left && quad->movement.right);
-  float accel = 1.0f;
+  float accel = 0.1f;
+  float reverse_accel = 0.01f;
 
-  if (diag)
-    accel = accel * (1.0 / GLM_SQRT1_2f);
-
-  vec2 velocity;
-  glm_vec2_zero(velocity);
+  float rotation = 0.0f;
+  float angle = 90.0f;
+  float epsilon = 0.05f;
 
   if (quad->movement.forward)
-    velocity[1] += accel * delta_time;
+    quad->velocity += accel;
   if (quad->movement.backward)
-    velocity[1] -= accel * delta_time;
-  if (quad->movement.left)
-    velocity[0] -= accel * delta_time;
-  if (quad->movement.right)
-    velocity[0] += accel * delta_time;
+    quad->velocity -= reverse_accel;
+  if (quad->movement.left && (quad->velocity > epsilon || quad->velocity < -epsilon)) {
+    rotation += glm_rad(angle);
+  }
+  if (quad->movement.right && (quad->velocity > epsilon || quad->velocity < -epsilon)) {
+    rotation -= glm_rad(angle);
+  }
 
-  glm_vec2_copy(velocity, quad->velocity);
+  quad->angle += rotation * delta_time;
 
-  quad->pos[1] += quad->velocity[1];
-  quad->pos[0] += quad->velocity[0];
+  float max_velocity = 1.0f;
+  if (quad->velocity > max_velocity)
+    quad->velocity = max_velocity;
+
+  if (quad->velocity < -max_velocity)
+    quad->velocity = -max_velocity;
+
+  quad->velocity *= 0.98f;
+
+  quad->pos[0] += cos(quad->angle) * quad->velocity * delta_time;
+  quad->pos[1] += sin(quad->angle) * quad->velocity * delta_time;
+
   glm_mat4_identity(quad->model);
   glm_translate(quad->model, quad->pos);
 
@@ -79,7 +86,7 @@ Quad add_quad(vec3 pos, vec3 rotation, float angle, float scale) {
   memcpy(quad.rotation, rotation, sizeof(float) * 3);
   quad.angle = angle;
   quad.scale = scale;
-  glm_vec2_zero(quad.velocity);
+  quad.velocity = 0.0f;
 
   glm_mat4_identity(quad.model);
   glm_translate(quad.model, quad.pos);

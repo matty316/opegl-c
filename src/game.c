@@ -28,10 +28,6 @@ void process_actions(GLFWwindow *window, Quad *quad) {
     int count;
     const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
     if (count >= 2) {
-      if (axes[1] < -0.5f)
-        forward = true;
-      if (axes[1] > 0.5f)
-        backward = true;
       if (axes[0] < -0.5f)
         left = true;
       if (axes[0] > 0.5f)
@@ -39,10 +35,13 @@ void process_actions(GLFWwindow *window, Quad *quad) {
     }
 
     const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+    for (int i = 0; i < count; i++)
+      if (buttons[i] == GLFW_PRESS)
+        printf("%d\n", i);
     if (count >= 15) {
-      if (buttons[11] == GLFW_PRESS)
+      if (buttons[1] == GLFW_PRESS)
         forward = true;
-      if (buttons[13] == GLFW_PRESS)
+      if (buttons[3] == GLFW_PRESS)
         backward = true;
       if (buttons[14] == GLFW_PRESS)
         left = true;
@@ -50,13 +49,13 @@ void process_actions(GLFWwindow *window, Quad *quad) {
         right = true;
     }
   }
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     forward = true;
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     backward = true;
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     left = true;
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     right = true;
 
   quad->movement.forward = forward;
@@ -101,7 +100,7 @@ void run(bool fullscreen) {
   use(shader);
 
   vec3 pos = {0.0f, 0.0f, 0.0f};
-  vec3 rotation = {0.0f, 0.0f, 0.0f};
+  vec3 rotation = {0.0f, 0.0f, 1.0f};
   Quad quad = add_quad(pos, rotation, 0.0f, 0.1f);
 
   while (!glfwWindowShouldClose(window)) {

@@ -1,6 +1,7 @@
 #ifndef quad_h
 #define quad_h
 
+#include "cglm/types.h"
 #include <glad/glad.h>
 #include <cglm/cglm.h>
 
@@ -9,7 +10,7 @@ typedef struct Quad {
   vec3 pos, rotation;
   float angle, scale;
   GLuint vao, vbo, ebo;
-  vec2 velocity;
+  float velocity;
   struct {
     bool forward;
     bool backward;
