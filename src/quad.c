@@ -1,6 +1,5 @@
 #include "quad.h"
 #include "cglm/util.h"
-#include "game.h"
 #include "shader.h"
 #include <math.h>
 #include <string.h>
@@ -41,34 +40,28 @@ void setup_quad_vao(GLuint *vao, GLuint *vbo, GLuint *ebo) {
 }
 
 void update_quad(Quad *quad, float delta_time) {
-  float accel = 0.5f;
-  float reverse_accel = 0.01f;
+  float accel = 10.0f;
+  float reverse_accel = 2.0f;
 
   float rotation = 0.0f;
   float angle = 90.0f;
-  float epsilon = 0.05f;
+  float turning_min = 20.0f;
 
   if (quad->movement.forward)
     quad->velocity += accel;
   if (quad->movement.backward)
     quad->velocity -= reverse_accel;
-  if (quad->movement.left && (quad->velocity > epsilon || quad->velocity < -epsilon)) {
+  if (quad->movement.left && (quad->velocity > turning_min || quad->velocity < -turning_min)) {
     rotation += glm_rad(angle);
   }
-  if (quad->movement.right && (quad->velocity > epsilon || quad->velocity < -epsilon)) {
+  if (quad->movement.right && (quad->velocity > turning_min || quad->velocity < -turning_min)) {
     rotation -= glm_rad(angle);
   }
 
   quad->angle += rotation * delta_time;
 
-  float max_velocity = 20.0f;
-  if (quad->velocity > max_velocity)
-    quad->velocity = max_velocity;
-
-  if (quad->velocity < -max_velocity)
-    quad->velocity = -max_velocity;
-
-  quad->velocity *= 0.98f;
+  printf("velocity: %f\n", quad->velocity);
+  quad->velocity *= 0.99f;
 
   float adjusted_angle = glm_rad(90.0f);
   quad->pos[0] += cos(quad->angle + adjusted_angle) * quad->velocity * delta_time;

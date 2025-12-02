@@ -2,7 +2,6 @@
 #include "cglm/cam.h"
 #include "quad.h"
 #include "shader.h"
-#include "common.h"
 #include "vert-shader.h"
 #include "frag-shader.h"
 #include <stdio.h>
@@ -17,7 +16,7 @@
 double last_time = 0.0;
 GLFWwindow *window;
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
@@ -64,13 +63,13 @@ void process_actions(GLFWwindow *window, Quad *quad) {
   quad->movement.right = right;
 }
 
-void init(bool fullscreen) {
+void init(bool fullscreen, int screen_width, int screen_height) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  window = glfwCreateWindow(width, height, "OpenGL in C", fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+  window = glfwCreateWindow(screen_width, screen_height, "OpenGL in C", fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
   if (window == NULL) {
     printf("Failed to create GLFW window\n");
     glfwTerminate();
@@ -91,17 +90,20 @@ void init(bool fullscreen) {
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+  glEnable(GL_DEPTH_TEST);
+
   stbi_set_flip_vertically_on_load(true);
 }
 
 void run(GLuint player_texture_id) {
   GLuint shader = create_shader((const char*)shaders_shader_vert, shaders_shader_vert_len, (const char*)shaders_shader_frag, shaders_shader_frag_len);
   use(shader);
-
-  vec3 pos = {0.0f, 0.0f, 0.0f};
+  int width, height;
+  glfwGetFramebufferSize(window, &width, &height);
+  vec3 pos = {(float)width / 2.0f, (float)height / 2.0f, 0.0f};
   vec3 rotation = {0.0f, 0.0f, 1.0f};
 
-  Quad player = add_quad(pos, rotation, 0.0f, 4.0f, player_texture_id);
+  Quad player = add_quad(pos, rotation, 0.0f, 100.0f, player_texture_id);
 
   while (!glfwWindowShouldClose(window)) {
     process_actions(window, &player);
@@ -113,16 +115,14 @@ void run(GLuint player_texture_id) {
     update_quad(&player, delta_time);
 
     glClearColor(0.8f, 0.8f, 0.98f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     use(shader);
 
     mat4 proj;
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    float aspect = (float)width / (float)height;
-    float size = 20.0f;
-    glm_ortho(-aspect * size, aspect * size, -size, size, -100.0f, 100.0f, proj);
+    glm_ortho(0, width, 0, height, -1.0f, 1.0f, proj);
     set_mat4(shader, "proj", proj);
 
     draw_quad(&player, shader);
