@@ -1,5 +1,7 @@
 #include "quad.h"
+#include "cglm/types.h"
 #include "cglm/util.h"
+#include "cglm/vec3.h"
 #include "shader.h"
 #include <math.h>
 #include <string.h>
@@ -39,36 +41,9 @@ void setup_quad_vao(GLuint *vao, GLuint *vbo, GLuint *ebo) {
   glBindVertexArray(0);
 }
 
-void update_quad(Quad *quad, float delta_time) {
-  float accel = 10.0f;
-  float reverse_accel = 2.0f;
-
-  float rotation = 0.0f;
-  float angle = 90.0f;
-  float turning_min = 20.0f;
-
-  if (quad->movement.forward)
-    quad->velocity += accel;
-  if (quad->movement.backward)
-    quad->velocity -= reverse_accel;
-  if (quad->movement.left && (quad->velocity > turning_min || quad->velocity < -turning_min)) {
-    rotation += glm_rad(angle);
-  }
-  if (quad->movement.right && (quad->velocity > turning_min || quad->velocity < -turning_min)) {
-    rotation -= glm_rad(angle);
-  }
-
-  quad->angle += rotation * delta_time;
-
-  printf("velocity: %f\n", quad->velocity);
-  quad->velocity *= 0.99f;
-
-  float adjusted_angle = glm_rad(90.0f);
-  quad->pos[0] += cos(quad->angle + adjusted_angle) * quad->velocity * delta_time;
-  quad->pos[1] += sin(quad->angle + adjusted_angle) * quad->velocity * delta_time;
-
+void update_quad(Quad *quad) {
   glm_mat4_identity(quad->model);
-  glm_translate(quad->model, quad->pos);
+  glm_translate(quad->model, quad->position);
 
   glm_rotate(quad->model, quad->angle, quad->rotation);
 
@@ -76,27 +51,21 @@ void update_quad(Quad *quad, float delta_time) {
   glm_scale(quad->model, scale_vec);
 }
 
-Quad add_quad(vec3 pos, vec3 rotation, float angle, float scale, GLuint texture_id) {
+Quad init_quad(vec3 pos, vec3 rotation, float angle, float scale, GLuint texture_id) {
   Quad quad;
-  memcpy(quad.pos, pos, sizeof(float) * 3);
-  memcpy(quad.rotation, rotation, sizeof(float) * 3);
+  glm_vec3_copy(pos, quad.position);
+  glm_vec3_copy(rotation, quad.rotation);
   quad.angle = angle;
   quad.scale = scale;
-  quad.velocity = 0.0f;
   quad.texture_id = texture_id;
 
   glm_mat4_identity(quad.model);
-  glm_translate(quad.model, quad.pos);
+  glm_translate(quad.model, quad.position);
 
   glm_rotate(quad.model, quad.angle, quad.rotation);
 
   vec3 scale_vec = {quad.scale, quad.scale, quad.scale};
   glm_scale(quad.model, scale_vec);
-
-  quad.movement.forward = false;
-  quad.movement.backward = false;
-  quad.movement.left = false;
-  quad.movement.right = false;
 
   setup_quad_vao(&quad.vao, &quad.vbo, &quad.ebo);
 

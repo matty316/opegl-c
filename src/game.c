@@ -1,5 +1,6 @@
 #include "game.h"
 #include "cglm/cam.h"
+#include "game-object.h"
 #include "quad.h"
 #include "shader.h"
 #include "vert-shader.h"
@@ -20,7 +21,7 @@ void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int width, i
   glViewport(0, 0, width, height);
 }
 
-void process_actions(GLFWwindow *window, Quad *quad) {
+void process_actions(GLFWwindow *window, GameObject *player) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 
@@ -57,10 +58,10 @@ void process_actions(GLFWwindow *window, Quad *quad) {
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     right = true;
 
-  quad->movement.forward = forward;
-  quad->movement.backward = backward;
-  quad->movement.left = left;
-  quad->movement.right = right;
+  player->movement.forward = forward;
+  player->movement.backward = backward;
+  player->movement.left = left;
+  player->movement.right = right;
 }
 
 void init(bool fullscreen, int screen_width, int screen_height) {
@@ -101,9 +102,8 @@ void run(GLuint player_texture_id) {
   int width, height;
   glfwGetFramebufferSize(window, &width, &height);
   vec3 pos = {(float)width / 2.0f, (float)height / 2.0f, 0.0f};
-  vec3 rotation = {0.0f, 0.0f, 1.0f};
 
-  Quad player = add_quad(pos, rotation, 0.0f, 100.0f, player_texture_id);
+  GameObject player = init_game_object(pos, player_texture_id);
 
   while (!glfwWindowShouldClose(window)) {
     process_actions(window, &player);
@@ -112,7 +112,7 @@ void run(GLuint player_texture_id) {
     float delta_time = (float)(current_time - last_time);
     last_time = current_time;
 
-    update_quad(&player, delta_time);
+    update_game_object(&player, delta_time);
 
     glClearColor(0.8f, 0.8f, 0.98f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,13 +125,13 @@ void run(GLuint player_texture_id) {
     glm_ortho(0, width, 0, height, -1.0f, 1.0f, proj);
     set_mat4(shader, "proj", proj);
 
-    draw_quad(&player, shader);
+    draw_game_object(&player, shader);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
-  destroy_quad(&player);
+  destroy_game_object(&player);
   glDeleteProgram(shader);
   glfwTerminate();
 }
