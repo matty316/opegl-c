@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <stdbool.h>
 
-void init(bool fullscreen, int screen_width, int screen_height);
-void run(GLuint player_texture_id);
+void ope_init(bool fullscreen, int screen_width, int screen_height);
+void ope_run(GLuint player_texture_id);
 
 #endif

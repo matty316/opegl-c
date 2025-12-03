@@ -64,7 +64,7 @@ void process_actions(GLFWwindow *window, GameObject *player) {
   player->movement.right = right;
 }
 
-void init(bool fullscreen, int screen_width, int screen_height) {
+void ope_init(bool fullscreen, int screen_width, int screen_height) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -96,7 +96,7 @@ void init(bool fullscreen, int screen_width, int screen_height) {
   stbi_set_flip_vertically_on_load(true);
 }
 
-void run(GLuint player_texture_id) {
+void ope_run(GLuint player_texture_id) {
   GLuint shader = create_shader((const char*)shaders_shader_vert, shaders_shader_vert_len, (const char*)shaders_shader_frag, shaders_shader_frag_len);
   use(shader);
   int width, height;
