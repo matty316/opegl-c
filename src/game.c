@@ -66,8 +66,8 @@ void process_actions(GLFWwindow *window, GameObject *player) {
 
 void ope_init(bool fullscreen, int screen_width, int screen_height) {
   glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   window = glfwCreateWindow(screen_width, screen_height, "OpenGL in C", fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
