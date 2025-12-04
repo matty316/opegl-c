@@ -14,6 +14,9 @@
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
+#define MAX_ENV_OBJECTS 16
+GameObject envObjects[MAX_ENV_OBJECTS];
+
 double last_time = 0.0;
 GLFWwindow *window;
 
@@ -104,6 +107,8 @@ void ope_run(GLuint player_texture_id) {
   vec3 pos = {(float)width / 2.0f, (float)height / 2.0f, 0.0f};
 
   GameObject player = init_game_object(pos, player_texture_id);
+
+
 
   while (!glfwWindowShouldClose(window)) {
     process_actions(window, &player);

@@ -24,6 +24,8 @@ void update_game_object(GameObject *obj, float delta_time);
 void draw_game_object(GameObject *obj, GLuint shader);
 void destroy_game_object(GameObject *obj);
 void set_game_object_mass(GameObject *obj, float mass);
+void set_game_object_velocity(GameObject *obj, vec3 velocity);
+void set_game_object_position(GameObject *obj, vec3 position);
 void clear_game_object_accumulator(GameObject *obj);
 
 #endif

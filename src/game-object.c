@@ -97,3 +97,12 @@ void clear_game_object_accumulator(GameObject *obj) {
 void add_force_to_game_object(GameObject *obj, vec3 force) {
   glm_vec3_add(obj->force_accum, force, obj->force_accum);
 }
+
+void set_game_object_velocity(GameObject *obj, vec3 velocity) {
+  glm_vec3_copy(velocity, obj->velocity);
+}
+
+void set_game_object_position(GameObject *obj, vec3 position) {
+  glm_vec3_copy(position, obj->position);
+  glm_vec3_copy(obj->position, obj->quad.position);
+}
