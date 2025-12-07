@@ -108,14 +108,14 @@ void ope_run(GLuint player_texture_id) {
 
   GameObject player = init_game_object(pos, player_texture_id);
 
-
-
   while (!glfwWindowShouldClose(window)) {
     process_actions(window, &player);
 
     double current_time = glfwGetTime();
     float delta_time = (float)(current_time - last_time);
     last_time = current_time;
+
+    printf("frame time: %fms\n", delta_time * 1000);
 
     update_game_object(&player, delta_time);
 

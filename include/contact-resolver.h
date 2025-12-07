@@ -25,4 +25,8 @@ ContactResolver init_contact_resolver(size_t iterations);
 void set_resolver_iterations(ContactResolver *resolver, size_t iterations);
 void resolve_contacts(ContactResolver *resolver, GameObjectContact *contact_array, size_t num_contacts, float delta_time);
 
+typedef enum ContactGeneratorType {
+  CG_PLACEHOLDER
+} ContactGeneratorType;
+
 #endif
